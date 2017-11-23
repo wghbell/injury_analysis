@@ -1,0 +1,85 @@
+# We're doing more with our Serious Injury Outcome Indicators data
+# Come with us as we explore Suicide and Intentional Self-Harm in more detail
+# Please note: this code is designed to work on Stats NZ systems, therefore file paths / folders will only be applicable in that environment
+# Warning: this code deals with the subject of suicide and may be distressing for some people
+
+# Research question: are suicides different from non-fatal intentional self-harm?
+
+# 1. Set working directory
+setwd("~/Network-Shares/U-Drive-SAS-02BAU/SocPopStats/CPR/Injury/Chartbooks")
+
+# 2. Install some required packages
+# Our data is stored in SAS datasets (sas7bdat) with compression, so the "sas7bdat" package won't work
+# Instead we need "haven"
+# see https://garthtarr.github.io/meatR/rio.html for more
+install.packages("haven")
+library(haven)
+
+# 3. Read in dataset(s)
+# Occupations
+# Note: occupations have been manually coded to ANZSCO using the raw "occupation" field and the Classification Code Finder
+# convert from SAS to R code
+data Occ;
+	informat occ Text $255.;
+	infile "&data.\moh_occ_clsn.csv" firstobs=2 delimiter=',' dsd; 
+ 	input occ Text Not_emp Student Retired Beneficiary Other_NW 
+			Not_specified Healthcare Education;
+run;
+# SNF
+snf_dat = read_sas("fatals2017.sas7bdat")
+snf_dat$ecode3 <- substr(snf_dat$ecode4, 1, 3)
+
+# convert to R
+data SNF_1;
+	set cbook.sernonfatalevents2017withwork;
+	where selfharm = 1;
+	ecode3 = substr(ecode4,1,3);
+	*Ethnicity;
+	if nhi_ethnic_prioritised_code 	in('10','11','12')  then European = 1; 
+	else European = .;
+	if nhi_ethnic_prioritised_code 	= '21'  then Maori = 1; 
+	else Maori = .;
+	if nhi_ethnic_prioritised_code 	in('30','31','32','33','34','35','36','37')  then Pacific = 1; 
+	else Pacific = .;
+	if nhi_ethnic_prioritised_code 	in('40','41','42','43','44')  then Asian = 1; 
+	else Asian = .;
+	if nhi_ethnic_prioritised_code 	in('51','52','53')  then MELAA = 1; 
+	else MELAA = .;
+	if nhi_ethnic_prioritised_code 	in('54','61','94','95','97','99')  then Other = 1; 
+	else Other = .;
+	year = dischyear;
+	SNF = 1;
+	Severity = "SNF";
+run;
+
+# Fatal
+# convert to R
+data Fatal_1;
+	set cbook.fatals2017;
+	where selfharm = 1;
+	ecode3 = substr(ecode,1,3);
+	age_num = input(age_in_yrs_code,best.);
+	*Ethnicity;
+ 	if ethnicGp_code 	in('10','11','12')  then European = 1; 
+	else European = .;
+	if ethnicGp_code 	= '21'  then Maori = 1; 
+	else Maori = .;
+	if ethnicGp_code 	in('30','31','32','33','34','35','36','37')  then Pacific = 1; 
+	else Pacific = .;
+	if ethnicGp_code 	in('40','41','42','43','44')  then Asian = 1; 
+	else Asian = .;
+	if ethnicGp_code 	in('51','52','53')  then MELAA = 1; 
+	else MELAA = .;
+	if ethnicGp_code 	in('54','61','94','95','97','99')  then Other = 1; 
+	else Other = .;
+	sex_code = nhi_sex_code;
+	age = age_num;
+	year = year_code;
+	Fatal = 1;
+	Severity = "Fat";
+	ecode4 = ecode;
+run;
+
+# Combined Fatal and SNF
+
+# Tables for analysis
