@@ -26,20 +26,20 @@ data Occ;
 			Not_specified Healthcare Education;
 run;
 # SNF
-snf_dat = read_sas("fatals2017.sas7bdat")
+snf_dat = read_sas("sernonfatalevents2017withwork.sas7bdat")
 snf_dat$ecode3 <- substr(snf_dat$ecode4, 1, 3)
+snf_dat$severity <- 'SNF'
+snf_dat$year <- snf_dat$dischyear
+if(snf_dat$nhi_ethnic_prioritised_code = ('11' or '12' or '13')) snf_dat$european <- '1'
 
 # convert to R
 # https://stackoverflow.com/questions/12125980/how-to-create-a-new-variable-in-a-data-frame-based-on-a-condition 
 # https://datascienceplus.com/create-new-variable-in-r/
 
-data SNF_1;
-	set cbook.sernonfatalevents2017withwork;
-	where selfharm = 1;
-	ecode3 = substr(ecode4,1,3);
+SNF_dat1 <- snf_dat[ which(snf_dat$selfharm=='1'),]
+	
+	
 	*Ethnicity;
-	if nhi_ethnic_prioritised_code 	in('10','11','12')  then European = 1; 
-	else European = .;
 	if nhi_ethnic_prioritised_code 	= '21'  then Maori = 1; 
 	else Maori = .;
 	if nhi_ethnic_prioritised_code 	in('30','31','32','33','34','35','36','37')  then Pacific = 1; 
@@ -50,13 +50,12 @@ data SNF_1;
 	else MELAA = .;
 	if nhi_ethnic_prioritised_code 	in('54','61','94','95','97','99')  then Other = 1; 
 	else Other = .;
-	year = dischyear;
 	SNF = 1;
-	Severity = "SNF";
 run;
 
 # Fatal
 # convert to R
+fat_dat = read_sas("fatals2017.sas7bdat")
 data Fatal_1;
 	set cbook.fatals2017;
 	where selfharm = 1;
