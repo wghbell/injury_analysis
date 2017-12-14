@@ -23,13 +23,18 @@ Asian <- c('40','41','42','43','44')
 MEELA <- c('51','52','53')
 Other <- c('54','61','94','95','97','99')
 
+#vars for analysis (data <- data[keepvars])
+keepvars <- c("year","ecode3","severity","age","sex","ethnic")
+
 # SNF
 snf_dat = read_sas("sernonfatalevents2017withwork.sas7bdat")
+snf_dat$year <- snf_dat$dischyear
 snf_dat$ecode3 <- substr(snf_dat$ecode4, 1, 3)
 snf_dat$severity <- 'SNF'
-snf_dat$year <- snf_dat$dischyear
+snf_dat$sex <- snf_dat$sex_code
+snf_dat$ethnic <- snf_dat$nhi_ethnic_prioritised_code
 
-SNF_dat1 <- snf_dat[ which(snf_dat$selfharm=='1'),]
+snf_dat1 <- snf_dat[ which(snf_dat$selfharm=='1'),]
 
 # https://stackoverflow.com/questions/12125980/how-to-create-a-new-variable-in-a-data-frame-based-on-a-condition 
 # https://datascienceplus.com/create-new-variable-in-r/
@@ -39,22 +44,24 @@ SNF_dat1 <- snf_dat[ which(snf_dat$selfharm=='1'),]
 
 # Fatal
 fat_dat = read_sas("fatals2017.sas7bdat")
+fat_dat$year <- fat_dat$year_code
 fat_dat$ecode3 <- substr(fat_dat$ECODE, 1, 3)
 fat_dat$severity <- 'Fat'
-fat_dat$year <- fat_dat$year_code
-fat_dat$ecode4 <- fat_dat$ECODE
 fat_dat$age <- fat_dat$AGE_IN_YRS_code
-fat_dat$sex_code <- fat_dat$nhi_sex_code
+fat_dat$sex <- fat_dat$nhi_sex_code
+fat_dat$ethnic <- fat_dat$ethnicgp_code
 
 fat_dat1 <- fat_dat[ which(fat_dat$selfharm=='1'),]
 
-#Create ethnicity flags: European , Maori , Pacific , Asian , MEELA based on ethnicGp_code
+#Create ethnicity flags: European , Maori , Pacific , Asian , MEELA based on ethnicgp_code
 #to do (see: https://stat.ethz.ch/pipermail/r-help/2007-October/144284.html)
 
 # Combined Fatal and SNF
 # make columns match
-# to do
+snf_dat2 <- snf_dat1[keepvars]
+fat_dat2 <- fat_dat1[keepvars]
+
 # append
-data <- rbind(snf_dat1, fat_dat1) 
+data <- rbind(snf_dat2, fat_dat2) 
 
 # Tables for analysis
