@@ -6,7 +6,7 @@
 # Research question: are suicides different from non-fatal intentional self-harm?
 
 # 1. Set working directory
-setwd("~/Network-Shares/U-Drive-SAS-02BAU/SocPopStats/CPR/Injury/Chartbooks")
+# setwd("~/Network-Shares/U-Drive-SAS-02BAU/SocPopStats/CPR/Injury/Chartbooks")
 
 # 2. Install some required packages
 # Our data is stored in SAS datasets (sas7bdat) with compression, so the "sas7bdat" package won't work
@@ -39,19 +39,22 @@ SNF_dat1 <- snf_dat[ which(snf_dat$selfharm=='1'),]
 
 # Fatal
 fat_dat = read_sas("fatals2017.sas7bdat")
-fat_dat$ecode3 <- substr(fat_dat$ecode, 1, 3)
+fat_dat$ecode3 <- substr(fat_dat$ECODE, 1, 3)
 fat_dat$severity <- 'Fat'
 fat_dat$year <- fat_dat$year_code
-fat_dat$ecode <- fat_dat$ecode
-fat_dat$age <- fat_dat$age_num
+fat_dat$ecode4 <- fat_dat$ECODE
+fat_dat$age <- fat_dat$AGE_IN_YRS_code
 fat_dat$sex_code <- fat_dat$nhi_sex_code
 
 fat_dat1 <- fat_dat[ which(fat_dat$selfharm=='1'),]
 
 #Create ethnicity flags: European , Maori , Pacific , Asian , MEELA based on ethnicGp_code
-#to do
+#to do (see: https://stat.ethz.ch/pipermail/r-help/2007-October/144284.html)
 
 # Combined Fatal and SNF
+# make columns match
+# to do
+# append
 data <- rbind(snf_dat1, fat_dat1) 
 
 # Tables for analysis
