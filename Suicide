@@ -15,73 +15,43 @@ setwd("~/Network-Shares/U-Drive-SAS-02BAU/SocPopStats/CPR/Injury/Chartbooks")
 install.packages("haven")
 library(haven)
 
-# 3. Read in dataset(s)
-# Occupations
-# Note: occupations have been manually coded to ANZSCO using the raw "occupation" field and the Classification Code Finder
-# convert from SAS to R code
-data Occ;
-	informat occ Text $255.;
-	infile "&data.\moh_occ_clsn.csv" firstobs=2 delimiter=',' dsd; 
- 	input occ Text Not_emp Student Retired Beneficiary Other_NW 
-			Not_specified Healthcare Education;
-run;
+#ethnic vectors
+European <- c('11','12','13')
+Maori <- c('21')
+Pacific <- c('30','31','32','33','34','35','36','37')
+Asian <- c('40','41','42','43','44')
+MEELA <- c('51','52','53')
+Other <- c('54','61','94','95','97','99')
+
 # SNF
 snf_dat = read_sas("sernonfatalevents2017withwork.sas7bdat")
 snf_dat$ecode3 <- substr(snf_dat$ecode4, 1, 3)
 snf_dat$severity <- 'SNF'
 snf_dat$year <- snf_dat$dischyear
-if(snf_dat$nhi_ethnic_prioritised_code = ('11' or '12' or '13')) snf_dat$european <- '1'
 
-# convert to R
+SNF_dat1 <- snf_dat[ which(snf_dat$selfharm=='1'),]
+
 # https://stackoverflow.com/questions/12125980/how-to-create-a-new-variable-in-a-data-frame-based-on-a-condition 
 # https://datascienceplus.com/create-new-variable-in-r/
 
-SNF_dat1 <- snf_dat[ which(snf_dat$selfharm=='1'),]
-	
-	
-	*Ethnicity;
-	if nhi_ethnic_prioritised_code 	= '21'  then Maori = 1; 
-	else Maori = .;
-	if nhi_ethnic_prioritised_code 	in('30','31','32','33','34','35','36','37')  then Pacific = 1; 
-	else Pacific = .;
-	if nhi_ethnic_prioritised_code 	in('40','41','42','43','44')  then Asian = 1; 
-	else Asian = .;
-	if nhi_ethnic_prioritised_code 	in('51','52','53')  then MELAA = 1; 
-	else MELAA = .;
-	if nhi_ethnic_prioritised_code 	in('54','61','94','95','97','99')  then Other = 1; 
-	else Other = .;
-	SNF = 1;
-run;
+#Create ethnicity flags: European , Maori , Pacific , Asian , MEELA based on nhi_ethnic_prioritised_code
+#to do
 
 # Fatal
-# convert to R
 fat_dat = read_sas("fatals2017.sas7bdat")
-data Fatal_1;
-	set cbook.fatals2017;
-	where selfharm = 1;
-	ecode3 = substr(ecode,1,3);
-	age_num = input(age_in_yrs_code,best.);
-	*Ethnicity;
- 	if ethnicGp_code 	in('10','11','12')  then European = 1; 
-	else European = .;
-	if ethnicGp_code 	= '21'  then Maori = 1; 
-	else Maori = .;
-	if ethnicGp_code 	in('30','31','32','33','34','35','36','37')  then Pacific = 1; 
-	else Pacific = .;
-	if ethnicGp_code 	in('40','41','42','43','44')  then Asian = 1; 
-	else Asian = .;
-	if ethnicGp_code 	in('51','52','53')  then MELAA = 1; 
-	else MELAA = .;
-	if ethnicGp_code 	in('54','61','94','95','97','99')  then Other = 1; 
-	else Other = .;
-	sex_code = nhi_sex_code;
-	age = age_num;
-	year = year_code;
-	Fatal = 1;
-	Severity = "Fat";
-	ecode4 = ecode;
-run;
+fat_dat$ecode3 <- substr(fat_dat$ecode, 1, 3)
+fat_dat$severity <- 'Fat'
+fat_dat$year <- fat_dat$year_code
+fat_dat$ecode <- fat_dat$ecode
+fat_dat$age <- fat_dat$age_num
+fat_dat$sex_code <- fat_dat$nhi_sex_code
+
+fat_dat1 <- fat_dat[ which(fat_dat$selfharm=='1'),]
+
+#Create ethnicity flags: European , Maori , Pacific , Asian , MEELA based on ethnicGp_code
+#to do
 
 # Combined Fatal and SNF
+data <- rbind(snf_dat1, fat_dat1) 
 
 # Tables for analysis
