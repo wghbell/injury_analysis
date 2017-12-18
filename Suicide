@@ -28,7 +28,10 @@ s_sex = read_sas("s_sex.sas7bdat")
 f_tot <- f_age[ which(f_age$age == '-99'),]
 s_tot <- s_age[ which(s_age$age == '-99'),]
 f_age2 <- f_age[ which(f_age$age != '-99'),]
-s_tot2 <- s_age[ which(s_age$age != '-99'),]
+s_age2 <- s_age[ which(s_age$age != '-99'),]
+
+
+
 
 # 4. From Infoshare (http://archive.stats.govt.nz/infoshare/?url=/infoshare/) we can download population figures
 pop <- read.csv("Pop_2000_14.csv",header = TRUE)
@@ -50,6 +53,64 @@ male_f <- f_sex[ which(f_sex$sex == 'M'),]
 female_s <- s_sex[ which(s_sex$sex == 'F'),]
 female_f <- f_sex[ which(f_sex$sex == 'F'),]
 
+# sub-set age group data 
+f_05_09 <- f_age2[ which(f_age2$age == '9'),]
+f_10_19 <- f_age2[ which(f_age2$age == '10'),]
+f_20_24 <- f_age2[ which(f_age2$age == '20'),]
+f_25_29 <- f_age2[ which(f_age2$age == '25'),]
+f_30_34 <- f_age2[ which(f_age2$age == '30'),]
+f_35_39 <- f_age2[ which(f_age2$age == '35'),]
+f_40_44 <- f_age2[ which(f_age2$age == '40'),]
+f_45_49 <- f_age2[ which(f_age2$age == '45'),]
+f_50_54 <- f_age2[ which(f_age2$age == '50'),]
+f_55_59 <- f_age2[ which(f_age2$age == '55'),]
+f_60_64 <- f_age2[ which(f_age2$age == '60'),]
+f_65_69 <- f_age2[ which(f_age2$age == '65'),]
+f_70_74 <- f_age2[ which(f_age2$age == '70'),]
+f_75_79 <- f_age2[ which(f_age2$age == '75'),]
+f_80_84 <- f_age2[ which(f_age2$age == '80'),]
+f_85_89 <- f_age2[ which(f_age2$age == '85'),]
+f_90_up <- f_age2[ which(f_age2$age == '90'),]
+
+s_05_09 <- s_age2[ which(s_age2$age == '9'),]
+s_10_19 <- s_age2[ which(s_age2$age == '10'),]
+s_20_24 <- s_age2[ which(s_age2$age == '20'),]
+s_25_29 <- s_age2[ which(s_age2$age == '25'),]
+s_30_34 <- s_age2[ which(s_age2$age == '30'),]
+s_35_39 <- s_age2[ which(s_age2$age == '35'),]
+s_40_44 <- s_age2[ which(s_age2$age == '40'),]
+s_45_49 <- s_age2[ which(s_age2$age == '45'),]
+s_50_54 <- s_age2[ which(s_age2$age == '50'),]
+s_55_59 <- s_age2[ which(s_age2$age == '55'),]
+s_60_64 <- s_age2[ which(s_age2$age == '60'),]
+s_65_69 <- s_age2[ which(s_age2$age == '65'),]
+s_70_74 <- s_age2[ which(s_age2$age == '70'),]
+s_75_79 <- s_age2[ which(s_age2$age == '75'),]
+s_80_84 <- s_age2[ which(s_age2$age == '80'),]
+s_85_89 <- s_age2[ which(s_age2$age == '85'),]
+s_90_up <- s_age2[ which(s_age2$age == '90'),]
+
+# sub-set pops by age
+pop_00_04 <- pop[ which(pop$age_group == '0'),]
+pop_05_09 <- pop[ which(pop$age_group == '5'),]
+pop_10_14 <- pop[ which(pop$age_group == '10'),]
+pop_15_19 <- pop[ which(pop$age_group == '15'),]
+pop_20_24 <- pop[ which(pop$age_group == '20'),]
+pop_25_29 <- pop[ which(pop$age_group == '25'),]
+pop_30_34 <- pop[ which(pop$age_group == '30'),]
+pop_35_39 <- pop[ which(pop$age_group == '35'),]
+pop_40_44 <- pop[ which(pop$age_group == '40'),]
+pop_45_49 <- pop[ which(pop$age_group == '45'),]
+pop_50_54 <- pop[ which(pop$age_group == '50'),]
+pop_55_59 <- pop[ which(pop$age_group == '55'),]
+pop_60_64 <- pop[ which(pop$age_group == '60'),]
+pop_65_69 <- pop[ which(pop$age_group == '65'),]
+pop_70_74 <- pop[ which(pop$age_group == '70'),]
+pop_75_79 <- pop[ which(pop$age_group == '75'),]
+pop_80_84 <- pop[ which(pop$age_group == '80'),]
+pop_85_89 <- pop[ which(pop$age_group == '85'),]
+pop_90_up <- pop[ which(pop$age_group == '90'),]
+
 # Sort our input datasets
 # attach(f_sex)
 # f_sex2 <- f_sex[order(sex),]
@@ -57,6 +118,10 @@ female_f <- f_sex[ which(f_sex$sex == 'F'),]
 
 # 5. Calculate rates with CIs for analysis using Epitools (https://cran.r-project.org/web/packages/epitools/epitools.pdf)
 # 5.1: Methods by severity and sex
+# set count vector
+# set person-time at risk vector
+# call function
+
 ## SNF: total both sexes
 x_1 <- s_tot$N
 pt_1 <- pop_sumB$Total / 100000
@@ -86,4 +151,117 @@ pois.exact(x_5,pt_5,conf.level = 0.95)
 x_6 <- female_f$N
 pt_6 <- pop_sumB$Female / 100000
 pois.exact(x_6,pt_6,conf.level = 0.95)
+
+# 5.2: Methods by severity and age
+# Fatals
+x_7 <- f_05_09$N
+pt_7 <- pop_05_09$Pop_sum / 100000
+pois.exact(x_7,pt_7,conf.level = 0.95)
+x_8 <- f_10_14$N
+pt_8 <- pop_10_14$Pop_sum / 100000
+pois.exact(x_8,pt_8,conf.level = 0.95)
+x_9 <- f_15_19$N
+pt_9 <- pop_15_19$Pop_sum / 100000
+pois.exact(x_9,pt_9,conf.level = 0.95)
+x_10 <- f_20_24$N
+pt_10 <- pop_20_24$Pop_sum / 100000
+pois.exact(x_10,pt_10,conf.level = 0.95)
+x_11 <- f_25_29$N
+pt_11 <- pop_25_29$Pop_sum / 100000
+pois.exact(x_11,pt_11,conf.level = 0.95)
+x_12 <- f_30_34$N
+pt_12 <- pop_30_34$Pop_sum / 100000
+pois.exact(x_12,pt_12,conf.level = 0.95)
+x_13 <- f_35_39$N
+pt_13 <- pop_35_39$Pop_sum / 100000
+pois.exact(x_13,pt_13,conf.level = 0.95)
+x_14 <- f_40_44$N
+pt_14 <- pop_40_44$Pop_sum / 100000
+pois.exact(x_14,pt_14,conf.level = 0.95)
+x_15 <- f_45_49$N
+pt_15 <- pop_45_49$Pop_sum / 100000
+pois.exact(x_15,pt_15,conf.level = 0.95)
+x_16 <- f_50_54$N
+pt_16 <- pop_50_54$Pop_sum / 100000
+pois.exact(x_16,pt_16,conf.level = 0.95)
+x_17 <- f_55_59$N
+pt_17 <- pop_55_59$Pop_sum / 100000
+pois.exact(x_17,pt_17,conf.level = 0.95)
+x_18 <- f_60_64$N
+pt_18 <- pop_60_64$Pop_sum / 100000
+pois.exact(x_18,pt_18,conf.level = 0.95)
+x_19 <- f_65_69$N
+pt_19 <- pop_65_69$Pop_sum / 100000
+pois.exact(x_19,pt_19,conf.level = 0.95)
+x_20 <- f_70_74$N
+pt_20 <- pop_70_74$Pop_sum / 100000
+pois.exact(x_20,pt_20,conf.level = 0.95)
+x_21 <- f_75_79$N
+pt_21 <- pop_75_79$Pop_sum / 100000
+pois.exact(x_21,pt_21,conf.level = 0.95)
+x_22 <- f_80_84$N
+pt_22 <- pop_80_84$Pop_sum / 100000
+pois.exact(x_22,pt_22,conf.level = 0.95)
+x_23 <- f_85_89$N
+pt_23 <- pop_85_89$Pop_sum / 100000
+pois.exact(x_23,pt_23,conf.level = 0.95)
+x_24 <- f_90_up$N
+pt_24 <- pop_90_up$Pop_sum / 100000
+pois.exact(x_24,pt_24,conf.level = 0.95)
+
+# SNF
+x_7 <- s_05_09$N
+pt_7 <- pop_05_09$Pop_sum / 100000
+pois.exact(x_7,pt_7,conf.level = 0.95)
+x_8 <- s_10_14$N
+pt_8 <- pop_10_14$Pop_sum / 100000
+pois.exact(x_8,pt_8,conf.level = 0.95)
+x_9 <- s_15_19$N
+pt_9 <- pop_15_19$Pop_sum / 100000
+pois.exact(x_9,pt_9,conf.level = 0.95)
+x_10 <- s_20_24$N
+pt_10 <- pop_20_24$Pop_sum / 100000
+pois.exact(x_10,pt_10,conf.level = 0.95)
+x_11 <- s_25_29$N
+pt_11 <- pop_25_29$Pop_sum / 100000
+pois.exact(x_11,pt_11,conf.level = 0.95)
+x_12 <- s_30_34$N
+pt_12 <- pop_30_34$Pop_sum / 100000
+pois.exact(x_12,pt_12,conf.level = 0.95)
+x_13 <- s_35_39$N
+pt_13 <- pop_35_39$Pop_sum / 100000
+pois.exact(x_13,pt_13,conf.level = 0.95)
+x_14 <- s_40_44$N
+pt_14 <- pop_40_44$Pop_sum / 100000
+pois.exact(x_14,pt_14,conf.level = 0.95)
+x_15 <- s_45_49$N
+pt_15 <- pop_45_49$Pop_sum / 100000
+pois.exact(x_15,pt_15,conf.level = 0.95)
+x_16 <- s_50_54$N
+pt_16 <- pop_50_54$Pop_sum / 100000
+pois.exact(x_16,pt_16,conf.level = 0.95)
+x_17 <- s_55_59$N
+pt_17 <- pop_55_59$Pop_sum / 100000
+pois.exact(x_17,pt_17,conf.level = 0.95)
+x_18 <- s_60_64$N
+pt_18 <- pop_60_64$Pop_sum / 100000
+pois.exact(x_18,pt_18,conf.level = 0.95)
+x_19 <- s_65_69$N
+pt_19 <- pop_65_69$Pop_sum / 100000
+pois.exact(x_19,pt_19,conf.level = 0.95)
+x_20 <- s_70_74$N
+pt_20 <- pop_70_74$Pop_sum / 100000
+pois.exact(x_20,pt_20,conf.level = 0.95)
+x_21 <- s_75_79$N
+pt_21 <- pop_75_79$Pop_sum / 100000
+pois.exact(x_21,pt_21,conf.level = 0.95)
+x_22 <- s_80_84$N
+pt_22 <- pop_80_84$Pop_sum / 100000
+pois.exact(x_22,pt_22,conf.level = 0.95)
+x_23 <- s_85_89$N
+pt_23 <- pop_85_89$Pop_sum / 100000
+pois.exact(x_23,pt_23,conf.level = 0.95)
+x_24 <- s_90_up$N
+pt_24 <- pop_90_up$Pop_sum / 100000
+pois.exact(x_24,pt_24,conf.level = 0.95)
 
