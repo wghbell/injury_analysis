@@ -56,7 +56,7 @@ female_f <- f_sex[ which(f_sex$sex == 'F'),]
 # detach(f_sex)
 
 # 5. Calculate rates with CIs for analysis using Epitools (https://cran.r-project.org/web/packages/epitools/epitools.pdf)
-# 5.1: Methods by severity
+# 5.1: Methods by severity and sex
 ## SNF: total both sexes
 x_1 <- s_tot$N
 pt_1 <- pop_sumB$Total / 100000
@@ -72,4 +72,18 @@ x_3 <- female_s$N
 pt_3 <- pop_sumB$Female / 100000
 pois.exact(x_3,pt_3,conf.level = 0.95)
 
-# 6. 
+## Fatals: total both sexes
+x_4 <- f_tot$N
+pt_4 <- pop_sumB$Total / 100000
+pois.exact(x_4,pt_4,conf.level = 0.95)
+
+## Fatals: Males
+x_5 <- male_f$N
+pt_5 <- pop_sumB$Male / 100000
+pois.exact(x_5,pt_5,conf.level = 0.95)
+
+## Fatals: Females
+x_6 <- female_f$N
+pt_6 <- pop_sumB$Female / 100000
+pois.exact(x_6,pt_6,conf.level = 0.95)
+
