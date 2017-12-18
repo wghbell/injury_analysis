@@ -6,7 +6,7 @@
 # Research question: are suicides different from non-fatal intentional self-harm?
 
 # 1. Set working directory
-# setwd("~/Network-Shares/U-Drive-SAS-02BAU/SocPopStats/CPR/Injury/Chartbooks")
+setwd("~/Network-Shares/U-Drive-SAS-02BAU/SocPopStats/CPR/Injury/Chartbooks/R")
 
 # 2. Install some required packages
 # Our data is stored in SAS datasets (sas7bdat) with compression, so the "sas7bdat" package won't work
@@ -14,54 +14,62 @@
 # see https://garthtarr.github.io/meatR/rio.html for more
 install.packages("haven")
 library(haven)
+install.packages("epitools")
+library(epitools)
 
-#ethnic vectors
-European <- c('11','12','13')
-Maori <- c('21')
-Pacific <- c('30','31','32','33','34','35','36','37')
-Asian <- c('40','41','42','43','44')
-MEELA <- c('51','52','53')
-Other <- c('54','61','94','95','97','99')
+# 3. From Stats NZ we get data in SAS PROC TABULATE output format [data = read_sas("name.sas7bdat")
+f_age = read_sas("f_age.sas7bdat")
+f_eth = read_sas("f_eth.sas7bdat")
+f_sex = read_sas("f_sex.sas7bdat")
+s_age = read_sas("s_age.sas7bdat")
+s_eth = read_sas("s_eth.sas7bdat")
+s_sex = read_sas("s_sex.sas7bdat")
 
-#vars for analysis (data <- data[keepvars])
-keepvars <- c("year","ecode3","severity","age","sex","ethnic")
+f_tot <- f_age[ which(f_age$age == '-99'),]
+s_tot <- s_age[ which(s_age$age == '-99'),]
+f_age2 <- f_age[ which(f_age$age != '-99'),]
+s_tot2 <- s_age[ which(s_age$age != '-99'),]
 
-# SNF
-snf_dat = read_sas("sernonfatalevents2017withwork.sas7bdat")
-snf_dat$year <- snf_dat$dischyear
-snf_dat$ecode3 <- substr(snf_dat$ecode4, 1, 3)
-snf_dat$severity <- 'SNF'
-snf_dat$sex <- snf_dat$sex_code
-snf_dat$ethnic <- snf_dat$nhi_ethnic_prioritised_code
+# 4. From Infoshare (http://archive.stats.govt.nz/infoshare/?url=/infoshare/) we can download population figures
+pop <- read.csv("Pop_2000_14.csv",header = TRUE)
+popB <- read.csv("Pop_2000_14_by_sex.csv",header = TRUE)
 
-snf_dat1 <- snf_dat[ which(snf_dat$selfharm=='1'),]
+# Sub-setting our groups for analysis
+pop_sumB <- popB[ which(popB$Year == '2000-14'),]
 
-# https://stackoverflow.com/questions/12125980/how-to-create-a-new-variable-in-a-data-frame-based-on-a-condition 
-# https://datascienceplus.com/create-new-variable-in-r/
+age_group <- pop$age_group
+pop_sum <- pop$Pop_sum
+pop_sum2 <- pop_sum / 100000
 
-#Create ethnicity flags: European , Maori , Pacific , Asian , MEELA based on nhi_ethnic_prioritised_code
-#to do
+male_pop <- pop_sumB$Male / 100000
+female_pop <- pop_sumB$Female / 100000
+total_pop <- pop_sumB$Total / 100000
 
-# Fatal
-fat_dat = read_sas("fatals2017.sas7bdat")
-fat_dat$year <- fat_dat$year_code
-fat_dat$ecode3 <- substr(fat_dat$ECODE, 1, 3)
-fat_dat$severity <- 'Fat'
-fat_dat$age <- fat_dat$AGE_IN_YRS_code
-fat_dat$sex <- fat_dat$nhi_sex_code
-fat_dat$ethnic <- fat_dat$ethnicgp_code
+male_s <- s_sex[ which(s_sex$sex == 'M'),]
+male_f <- f_sex[ which(f_sex$sex == 'M'),]
+female_s <- s_sex[ which(s_sex$sex == 'F'),]
+female_f <- f_sex[ which(f_sex$sex == 'F'),]
 
-fat_dat1 <- fat_dat[ which(fat_dat$selfharm=='1'),]
+# Sort our input datasets
+# attach(f_sex)
+# f_sex2 <- f_sex[order(sex),]
+# detach(f_sex)
 
-#Create ethnicity flags: European , Maori , Pacific , Asian , MEELA based on ethnicgp_code
-#to do (see: https://stat.ethz.ch/pipermail/r-help/2007-October/144284.html)
+# 5. Calculate rates with CIs for analysis using Epitools (https://cran.r-project.org/web/packages/epitools/epitools.pdf)
+# 5.1: Methods by severity
+## SNF: total both sexes
+x_1 <- s_tot$N
+pt_1 <- pop_sumB$Total / 100000
+pois.exact(x_1,pt_1,conf.level = 0.95)
 
-# Combined Fatal and SNF
-# make columns match
-snf_dat2 <- snf_dat1[keepvars]
-fat_dat2 <- fat_dat1[keepvars]
+## SNF: Males
+x_2 <- male_s$N
+pt_2 <- pop_sumB$Male / 100000
+pois.exact(x_2,pt_2,conf.level = 0.95)
 
-# append
-data <- rbind(snf_dat2, fat_dat2) 
+## SNF: Females
+x_3 <- female_s$N
+pt_3 <- pop_sumB$Female / 100000
+pois.exact(x_3,pt_3,conf.level = 0.95)
 
-# Tables for analysis
+# 6. 
