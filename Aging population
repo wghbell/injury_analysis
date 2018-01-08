@@ -1,0 +1,87 @@
+# How will the aging population impact NZ's suicide rates?
+
+# Steps: 
+# 1: baseline age-standardised rate
+# derive age-standardised rate using ageadjust.direct (and cf ageadjust.indirect if possible) in EPITOOLS pkg with the following parameters:
+# count = 5-year average count of suicides by age-group
+# pop = 5-year average population estimate by age-group
+# rate = NULL
+# stdpop = WHO standard population
+# conf.level = 0.95
+
+# 2: derive expected number of suicides by age-group
+
+# 3: calculate age-standardised rates using expected number of suicides and Stats NZ population projections
+
+# Population estimates
+ages <- c("0-14","15-39","40-64","65+")
+pop_WHO <- c(261409,	393661,	262608,	82321)
+names(pop_WHO) = ages
+pop_2000_14 <- c(13437880,21707880,19910360,7982490)
+names(pop_2000_14) = ages
+pop_avg <- (pop_2000_14 / 15) 
+pop_2018 <- c(941100,1667800,1507900,747900)
+pop_2023 <- c(972600,1768600,1531000,885700)
+pop_2028 <- c(982700,1808700,1553300,1045000)
+pop_2033 <- c(997500,1765300,1650200,1182000)
+pop_2038 <- c(984800,1750600,1731000,1303400)
+pop_2043 <- c(969000,1781700,1802200,1370200)
+pop_2048 <- c(966700,1803000,1865100,1425800)
+pop_2053 <- c(976700,1796800,1907600,1503400)
+pop_2058 <- c(988200,1805300,1868900,1637200)
+pop_2063 <- c(994200,1799300,1858200,1757700)
+pop_2068 <- c(993000,1792900,1891800,1838100)
+names(pop_2018) = ages
+names(pop_2023) = ages
+names(pop_2028) = ages
+names(pop_2033) = ages
+names(pop_2038) = ages
+names(pop_2043) = ages
+names(pop_2048) = ages
+names(pop_2053) = ages
+names(pop_2058) = ages
+names(pop_2063) = ages
+names(pop_2068) = ages
+pop_proj <- c(pop_2018, pop_2023, pop_2028, pop_2033,pop_2038, pop_2043,pop_2048, pop_2053,pop_2058, pop_2063,pop_2068)
+
+# Suicide counts
+sui_2000_14 <- c(75,3888,2841,811)
+names(sui_2000_14) = ages
+sui_avg <- sui_2000_14 / 15
+
+# Baseline age-standardised rate: ageadjust.direct(count, pop, rate = NULL, stdpop, conf.level = 0.95)
+ageadjust.direct(sui_avg, pop_avg, rate = NULL, pop_WHO, conf.level = 0.95)
+age_rates <- (sui_avg / pop_avg) *100000
+
+# Derive expected number of suicides by age-group
+sui_2018 <- age_rates/100000 * pop_2018
+sui_2023 <- age_rates/100000 * pop_2023
+sui_2028 <- age_rates/100000 * pop_2028
+sui_2033 <- age_rates/100000 * pop_2033
+sui_2038 <- age_rates/100000 * pop_2038
+sui_2043 <- age_rates/100000 * pop_2043
+sui_2048 <- age_rates/100000 * pop_2048
+sui_2053 <- age_rates/100000 * pop_2053
+sui_2058 <- age_rates/100000 * pop_2058
+sui_2063 <- age_rates/100000 * pop_2063
+sui_2068 <- age_rates/100000 * pop_2068
+sui_proj <- age_rates/100000 * pop_proj
+
+ageadjust.direct(sui_2018, pop_2018, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2023, pop_2023, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2028, pop_2028, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2033, pop_2033, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2038, pop_2038, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2043, pop_2043, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2048, pop_2048, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2053, pop_2053, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2058, pop_2058, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2063, pop_2063, rate = NULL, pop_WHO, conf.level = 0.95)
+ageadjust.direct(sui_2068, pop_2068, rate = NULL, pop_WHO, conf.level = 0.95)
+
+
+#take these rates and turn them into a new vector "rates"
+
+
+
+
