@@ -1,4 +1,12 @@
 # How will the aging population impact NZ's suicide rates?
+# 0. Install some required packages
+# Our data is stored in SAS datasets (sas7bdat) with compression, so the "sas7bdat" package won't work
+# Instead we need "haven"
+# see https://garthtarr.github.io/meatR/rio.html for more
+install.packages("haven")
+library(haven)
+install.packages("epitools")
+library(epitools)
 
 # Steps: 
 # 1: baseline age-standardised rate
