@@ -1,0 +1,97 @@
+**********************************************;
+** Road toll								**;
+**	- Maori v Total							**;
+**	- age									**;
+**	- passenger, carocc, driver				**;
+**	- alcohol / drugs?						**;
+**********************************************;
+
+libname cbook '\\stats.govt.nz\sas\02bau\SocPopStats\CPR\Injury\Chartbooks' access=readonly;
+
+proc format;
+	value 	$mvtc
+  			'V304'-'V309', 'V314'-'V319', 'V324'-'V329','V334'-'V339', 'V344'-'V349', 'V354'-'V359', 
+  			'V364'-'V369', 'V374'-'V379', 'V384'-'V389','V394'-'V399', 'V404'-'V409', 'V414'-'V419', 
+  			'V424'-'V429', 'V434'-'V439', 'V444'-'V449','V454'-'V459', 'V464'-'V469', 'V474'-'V479', 
+  			'V484'-'V489', 'V494'-'V499', 'V504'-'V509','V514'-'V519', 'V524'-'V529', 'V534'-'V539',
+  			'V544'-'V549', 'V554'-'V559', 'V564'-'V569','V574'-'V579', 'V584'-'V589', 'V594'-'V599', 
+  			'V604'-'V609', 'V614'-'V619', 'V624'-'V629','V634'-'V639', 'V644'-'V649', 'V654'-'V659',
+  			'V664'-'V669', 'V674'-'V679', 'V684'-'V689','V694'-'V699', 'V704'-'V709', 'V714'-'V719', 
+  			'V724'-'V729', 'V734'-'V739', 'V744'-'V749','V754'-'V759', 'V764'-'V769', 'V774'-'V779',
+  			'V784'-'V789', 'V794'-'V799', 'V830'-'V833','V840'-'V843', 'V850'-'V853', 'V860'-'V863', 
+  			'V203'-'V209', 'V213'-'V219', 'V223'-'V229','V233'-'V239', 'V243'-'V249', 'V253'-'V259',
+  			'V263'-'V269', 'V273'-'V279', 'V283'-'V289','V294'-'V299', 'V123'-'V129', 'V133'-'V139', 
+  			'V143'-'V149', 'V194'-'V196', 'V021'-'V029','V031'-'V039', 'V041'-'V049', 'V092', 
+  			'V803'-'V805', 'V811',        'V821',       'V870'-'V878', 'V892'     
+			= 'MVTC'
+	;
+	value $cycle
+			'V100'-'V109','V110'-'V119','V120'-'V129', 'V130'-'V139', 'V140'-'V149', 'V150'-'V159', 
+			'V160'-'V169', 'V170'-'V179','V180'-'V189','V190'-'V199' = 'Cycle'
+	;
+	value $carocc
+			'V404','V405','V406','V407','V409','V414','V415','V416','V417','V419',
+			'V424','V425','V426','V427','V429','V434','V435','V436','V437','V439',
+			'V444','V445','V446','V447','V449','V454','V455','V456','V457','V459',
+			'V464','V465','V466','V467','V469','V474','V475','V476','V477','V479',
+			'V484','V485','V486','V487','V489','V494','V495','V496','V498','V499',
+			'8101','8111','8121','8131','8141','8151','8161','8171','8181','8191' = 'carocc'
+	;
+	value $vehocc
+			'V300'-'V399','V400'-'V499','V500'-'V599','V600'-'V699','V700'-'V799' = 'vehocc'
+	;
+
+	value $ped
+			'V021'-'V029','V031'-'V039', 'V041'-'V049', 'V092','8107','8117','8127','8137',
+			'8147','8157','8167','8177','8187','8197' = 'Ped'
+	;
+	value $motorbike
+			'V203'-'V209', 'V213'-'V219', 'V223'-'V229','V233'-'V239', 'V243'-'V249', 'V253'-'V259',
+  			'V263'-'V269', 'V273'-'V279', 'V283'-'V289','V294'-'V299' = 'Motorbike'
+	;
+	value $driver
+			'V300','V305','V310','V315','V320','V325','V330','V335','V340','V345',
+			'V350','V355','V360','V365','V370','V375','V380','V385','V390','V394',
+			'V400','V405','V410','V415','V420','V425','V430','V435','V440','V445',
+			'V450','V455','V460','V465','V470','V475','V480','V485','V490','V494',
+			'V500','V505','V510','V515','V520','V525','V530','V535','V540','V545',
+			'V550','V555','V560','V565','V570','V575','V580','V585','V590','V594',
+			'V600','V605','V610','V615','V620','V625','V630','V635','V640','V645',
+			'V650','V655','V660','V665','V670','V675','V680','V685','V690','V694',
+			'V700','V705','V710','V715','V720','V725','V730','V735','V740','V745',
+			'V750','V755','V760','V765','V770','V775','V780','V785','V790','V794',
+			'V800','V805','V810','V815','V820','V825','V830','V835','V840','V845',
+			'V850','V855','V860','V865','V870','V875','V880','V885','V890','V894' = 'Driver'
+		;
+run;
+
+
+
+proc contents data=cbook.fatals2017;
+run;
+
+data one;
+	set cbook.fatals2017;
+	where mvtc = 1;
+	cycle = (put (substr (ecode, 1, 4), $cycle.) = 'Cycle');
+	carocc = (put (substr (ecode, 1, 4), $carocc.) = 'carocc');
+	ped = (put (substr (ecode, 1, 4), $ped.) = 'Ped');
+	motorbike = (put (substr (ecode, 1, 4), $motorbike.) = 'Motorbike');
+	driver = (put (substr (ecode, 1, 4), $driver.) = 'Driver');
+	vehocc = (put (substr (ecode, 1, 4), $vehocc.) = 'vehocc');
+	*Ethnicity;
+ 	if ethnicGp_code = '21' then Maori = 1; 
+	else Maori = 0;
+run;
+title "People killed in MVTC";
+proc tabulate data=one missing;
+	class year_code cycle carocc ped motorbike mvtc driver vehocc maori;
+	tables year_code, (maori all)*(ped all) all;
+	tables year_code, (maori all)*(cycle all) all;
+	tables year_code, (maori all)*(motorbike all) all;
+	tables year_code, (maori all)*(carocc all) all;
+	tables year_code, (maori all)*(vehocc all) all;
+	tables year_code, (maori all)*(driver all) all;
+	tables year_code, (maori all)*(mvtc all) all;
+run;
+title;
