@@ -1,0 +1,75 @@
+**************************************************************************************************;
+** Map PCU to industry                                                                          **;
+** Inputs:                                                                                      **;
+**  1) allclaims dataset                                                                        **;
+**  2) PCU to ANZSIC06 map by year (map.csv)                                                    **;
+** Outputs:                                                                                     **;
+**  1) new variables (mapped_ind_1) on allclaims dataset                                        **;
+**  2) table of mapped_ind                                                                      **;
+**  3) table of old industry (industryDescription)                                              **;
+**************************************************************************************************;
+
+/*note: if you use the map that is not by year, then you can remove references to "year" in the program*/
+/*and you can get industry mapped to a lower level (so add in extra industry variables)*/
+
+** set up **;
+libname wrc "blah" access=readonly /*I always set read only when I'm experimenting*/
+%let filepath = "wherever the map is stored";
+
+** import map **;
+/*this should work*/
+proc import datafile = "&filepath/map.csv"
+  out = work.map
+  dbms = CSV
+  getnames = yes;
+ run;
+
+/*otherwise, try this*/
+data work.map;
+  infile "&filepath/map.csv"
+  delimiter = ','
+  missover
+  firstobs=2
+  input /*check the order of the actual file, but something like below...*/
+    year
+    PCU
+    mapped_ind_1 (ANZSIC06)
+    ...
+    ;
+run;
+
+** sort map before merging **;
+proc sort data = work.map;
+  by year PCU;
+run;
+
+** Merge on mapped_ind variables (and descriptions) **;
+/*the variable names may be slightly wrong here*/
+proc sql;
+  create table allclaims_new as
+  select *
+  from wrc.allclaims as a, work.map as b
+  where a.accidentcalendaryear = b.year and a.classificationunitcode = b.PCU;
+quit;
+
+/*or alternatively (again variable names may be slightly wrong)*/
+proc sql;
+  create table allclaims_new as
+  select *
+  from wrc.allclaims as a
+  left join work.map as b
+  on a.accidentcalendaryear = b.year and a.classificationunitcode = b.PCU;
+quit;
+ 
+ /*this should create a new dataset (allclaims_new) with addtional variables (mapped_ind_1)*/
+ 
+ ** tables for analysis **;
+title "IndustryDescription v Mapped industry";
+proc tabulate data = work.allclaims_new ;
+  class accidentcalendaryear industrydescription mapped_ind_1 / missing;
+  table year, industrydescription all;
+  table year, mapped_ind_1 all;
+run;
+
+
+  
