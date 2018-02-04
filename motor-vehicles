@@ -1,0 +1,52 @@
+**************************************************************************;
+** Question: are there more trucking accidents or are more just being 	**;
+**	reported to WorkSafe NZ?											**;
+**																		**;
+** Context: WorkSafe is seeing more traffic incidents in "logistics" 	**;
+**	being reported. Is this a real trend or a change in reporting 		**;
+**	behaviour?															**;
+**																		**;
+** Data: we have fatal and non-fatal MVTC crashes and we can cross-ref	**;
+**	against the work-related injuries. Here we go...					**; 
+**																		**;
+**************************************************************************;
+
+libname wrcdata '\\stats.govt.nz\sas\02bau\SocPopStats\CPR\Injury\WR-Injury_Secure\SAS_Datasets\' access =  readonly;
+
+libname cbook '\\stats.govt.nz\sas\02bau\SocPopStats\CPR\Injury\Chartbooks' access=readonly;
+
+title "MVTC and/or Work: MoH Fatals";
+proc tabulate data=cbook.fatals2017;
+	where work = 1 or mvtc = 1;
+	class year_code work mvtc;
+	table year_code, mvtc work work*mvtc all;
+run;
+
+title "MVTC and/or Work: Work Fatals";
+proc tabulate data=cbook.workfatals2016_final missing;
+	class acci_year MVatWork;
+	table acci_year, MVatWork all;
+run;
+
+title "MVTC and/or Work: WorkSafe Fatals";
+proc tabulate data=cbook.workfatals2016_final missing;
+	where ws_filenumber ne .;
+	class acci_year MVatWork;
+	table acci_year, MVatWork all;
+run;
+
+title "MVTC and/or Work: ACC Fatals";
+proc tabulate data=cbook.workfatals2016_final missing;
+	where acc_AccidentCalendarYear ne .;
+	class acci_year MVatWork;
+	table acci_year, MVatWork all;
+run;
+
+title "MVTC and/or Work: SNF";
+proc tabulate data=cbook.sernonfatalevents2017withwork;
+	where work = 1 or mvtc = 1;
+	class dischyear work mvtc;
+	table dischyear, mvtc work work*mvtc all;
+run;
+
+title;
