@@ -1,2 +1,2 @@
-# serious_injury_outcome_indicators
-Code for analysis of serious injury outcome indicator data
+# injury_analysis
+Code for analysis of serious injury outcome indicators and work related claims data
