@@ -1,0 +1,20 @@
+libname wrc "\\stats.govt.nz\sas\02bau\SocPopStats\CPR\Injury\WR-Injury_Secure\SAS_Datasets" access=readonly; 
+
+proc freq data= wrc.allclaims;
+	table AccidentCalendarYear * OccupationLevel1 / norow nocol nocum nopercent;
+	table AccidentCalendarYear * occup_L1 / norow nocol nocum nopercent;
+	table AccidentCalendarYear * OccupationLevel4 / norow nocol nocum nopercent;
+	table AccidentCalendarYear * OccupationLevel5 / norow nocol nocum nopercent;
+	table OccupationLevel4 / norow nocol nocum nopercent;
+	where IndustryDescription = "Arts and Recreation Services";
+run;
+
+data Arts;
+	set wrc.allclaims;
+	where IndustryDescription = "Arts and Recreation Services" and AccidentCalendarYear = 2016;
+run;
+
+data sportspeople;
+	set wrc.allclaims;
+	where OccupationLevel4 = "Sportspersons and Related Workers";
+run;
