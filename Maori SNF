@@ -5,6 +5,7 @@
 
 libname cbook '<insert file path>' access=readonly;
 
+/*Note: I can't remember what the industry variable name is...*/
 title "SNF work-related injuries";
 proc tabulate data=cbook.sernonfatalevents2017withwork;
 	where work = 1;
