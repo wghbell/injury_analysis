@@ -1,4 +1,4 @@
-libname wrc "\\stats.govt.nz\sas\02bau\SocPopStats\CPR\Injury\WR-Injury_Secure\SAS_Datasets" access=readonly; 
+libname wrc "<file path>" access=readonly; 
 
 proc freq data= wrc.allclaims;
 	table AccidentCalendarYear * OccupationLevel1 / norow nocol nocum nopercent;
