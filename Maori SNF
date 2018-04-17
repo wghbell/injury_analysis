@@ -1,0 +1,15 @@
+****************************************************************;
+** Serious non-fatal work-related injuries                    **;
+**  by Maori / non-Maori and industry                         **;
+****************************************************************;
+
+libname cbook '<insert file path>' access=readonly;
+
+title "SNF work-related injuries";
+proc tabulate data=cbook.sernonfatalevents2017withwork;
+	where work = 1;
+	class dischyear maori industry_description;
+	table dischyear, maori*industry_description all;
+run;
+
+title;
