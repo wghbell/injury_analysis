@@ -2,7 +2,7 @@
 ** What do we know about cyclists?                                              **;
 **********************************************************************************;
 
-libname cbook "\\stats.govt.nz\sas\02bau\SocPopStats\CPR\Injury\Chartbooks" access=readonly;
+libname cbook "<file path>" access=readonly;
 
 proc format;
 	value 	$mvtc
