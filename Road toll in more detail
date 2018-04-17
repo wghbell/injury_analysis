@@ -6,7 +6,7 @@
 **	- alcohol / drugs?						**;
 **********************************************;
 
-libname cbook '\\stats.govt.nz\sas\02bau\SocPopStats\CPR\Injury\Chartbooks' access=readonly;
+libname cbook '<filepath>' access=readonly;
 
 proc format;
 	value 	$mvtc
