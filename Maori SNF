@@ -5,12 +5,12 @@
 
 libname cbook '<insert file path>' access=readonly;
 
-/*Note: I can't remember what the industry variable name is...*/
+/*Note: check whether SIOI outputs by "dischyear" or "accidentcalendaryear"*/
 title "SNF work-related injuries";
 proc tabulate data=cbook.sernonfatalevents2017withwork;
 	where work = 1;
-	class dischyear maori industry_description;
-	table dischyear, maori*industry_description all;
+	class dischyear maori industrydescription;
+	table dischyear, maori*industrydescription all;
 run;
 
 title;
